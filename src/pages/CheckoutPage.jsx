@@ -3,11 +3,12 @@ import { Link, Navigate, useNavigate } from 'react-router-dom'
 import CheckoutForm from '../components/checkout/CheckoutForm.jsx'
 import OrderSummary from '../components/checkout/OrderSummary.jsx'
 import { useCart } from '../hooks/useCart.js'
+import { createPaymentCheckoutSession } from '../services/paymentGateway.js'
 import { placeSimulatedOrder } from '../services/orderService.js'
 import { getInternationalPhoneNumber } from '../utils/phoneNumber.js'
 import { isCardExpiryInFuture, isValidCardNumber } from '../utils/payment.js'
 
-function validateCheckoutForm(form, formData, paymentMethod) {
+function validateCheckoutForm(form, formData, paymentMethod, hasPaymentGateway) {
   const requiredFields = ['email', 'fullName', 'address', 'city', 'country', 'phoneNational']
   const hasMissingField = requiredFields.some(
     (field) => !String(formData.get(field) ?? '').trim(),
@@ -20,7 +21,7 @@ function validateCheckoutForm(form, formData, paymentMethod) {
     }
   }
 
-  if (paymentMethod !== 'card') return { isValid: true }
+  if (paymentMethod !== 'card' || hasPaymentGateway) return { isValid: true }
 
   const cardNumberInput = form.elements.cardNumber
   const expiryInput = form.elements.cardExpiry
@@ -65,6 +66,8 @@ function createOrder(formData, cart, paymentMethod) {
 }
 
 function CheckoutPage() {
+  const paymentSessionUrl = import.meta.env.VITE_PAYMENT_SESSION_URL?.trim() ?? ''
+  const hasPaymentGateway = paymentSessionUrl.length > 0
   const {
     items,
     itemCount,
@@ -89,7 +92,7 @@ function CheckoutPage() {
     if (!form.reportValidity()) return
 
     const formData = new FormData(form)
-    const validation = validateCheckoutForm(form, formData, paymentMethod)
+    const validation = validateCheckoutForm(form, formData, paymentMethod, hasPaymentGateway)
     if (!validation.isValid) {
       if (validation.message) setFormError(validation.message)
       return
@@ -106,6 +109,12 @@ function CheckoutPage() {
     let savedOrder = false
 
     try {
+      if (paymentMethod === 'card' && hasPaymentGateway) {
+        const session = await createPaymentCheckoutSession(order, paymentSessionUrl)
+        window.location.assign(session.checkoutUrl)
+        return
+      }
+
       const result = await placeSimulatedOrder(order)
       if (result.status !== 'simulated') {
         throw new Error('The simulated order did not complete successfully.')
@@ -119,7 +128,7 @@ function CheckoutPage() {
       clearCart()
       navigate('/order-confirmation', { state: { order: confirmedOrder } })
     } catch (error) {
-      console.error('Unable to complete and save the simulated StyleHub order.', error)
+      console.error('Unable to complete StyleHub checkout.', error)
       if (savedOrder) {
         try {
           if (previousOrder) {
@@ -131,7 +140,7 @@ function CheckoutPage() {
           console.error('Unable to restore the previous StyleHub order.', storageError)
         }
       }
-      setFormError('Your simulated order could not be completed. Please try again.')
+      setFormError('Checkout could not be completed. Please try again.')
       setIsSubmitting(false)
     }
   }
@@ -149,6 +158,7 @@ function CheckoutPage() {
       <div className="checkout-layout">
         <CheckoutForm
           formError={formError}
+          hasPaymentGateway={hasPaymentGateway}
           isSubmitting={isSubmitting}
           onSubmit={handleSubmit}
           paymentMethod={paymentMethod}

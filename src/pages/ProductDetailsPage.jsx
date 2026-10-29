@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import ImageWithFallback from '../components/ImageWithFallback.jsx'
 import { useCart } from '../hooks/useCart.js'
 import { getProductById } from '../data/products.js'
 import { formatCurrency } from '../utils/formatCurrency.js'
@@ -53,7 +54,11 @@ function ProductDetailsContent({ productId }) {
       </nav>
       <section className="product-detail">
         <div className="detail-image-wrap">
-          <img alt={product.name} className="detail-image" src={product.image.replace('w=900', 'w=1400')} />
+          <ImageWithFallback
+            alt={product.name}
+            className="detail-image"
+            src={product.image.replace('w=900', 'w=1400')}
+          />
         </div>
         <div className="detail-copy">
           <p className="eyebrow">{product.category.toUpperCase()} · STYLEHUB EDITION</p>

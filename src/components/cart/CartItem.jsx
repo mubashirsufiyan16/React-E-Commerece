@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import ImageWithFallback from '../ImageWithFallback.jsx'
 import { formatCurrency } from '../../utils/formatCurrency.js'
 
 function CartItem({ item, onQuantityChange, onRemove }) {
@@ -7,7 +8,7 @@ function CartItem({ item, onQuantityChange, onRemove }) {
   return (
     <article className="cart-item">
       <Link className="cart-item-image" to={`/products/${product.id}`}>
-        <img alt={product.name} src={product.image} />
+        <ImageWithFallback alt={product.name} src={product.image} />
       </Link>
       <div className="cart-item-details">
         <div className="cart-item-heading">

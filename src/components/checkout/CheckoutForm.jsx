@@ -25,7 +25,15 @@ const citiesByCountry = {
   'United States': ['Austin', 'Chicago', 'Los Angeles', 'New York', 'Seattle', 'Washington, D.C.'],
 }
 
-function CheckoutForm({ formError, isSubmitting, onSubmit, paymentMethod, setPaymentMethod, total }) {
+function CheckoutForm({
+  formError,
+  hasPaymentGateway,
+  isSubmitting,
+  onSubmit,
+  paymentMethod,
+  setPaymentMethod,
+  total,
+}) {
   const [country, setCountry] = useState('')
   const [city, setCity] = useState('')
   const [phone, setPhone] = useState('')
@@ -202,11 +210,15 @@ function CheckoutForm({ formError, isSubmitting, onSubmit, paymentMethod, setPay
             />
             <span className="payment-option-copy">
               <strong>Debit or credit card</strong>
-              <small>Simulated card payment; no charge will be made.</small>
+              <small>
+                {hasPaymentGateway
+                  ? 'Continue to the configured secure payment provider.'
+                  : 'Simulated card payment; no charge will be made.'}
+              </small>
             </span>
           </label>
         </div>
-        {paymentMethod === 'card' && (
+        {paymentMethod === 'card' && !hasPaymentGateway && (
           <div className="card-payment-fields">
             <p className="demo-card-notice">
               Demo only: use test card details, not a real card. Card details are not saved.
@@ -273,10 +285,16 @@ function CheckoutForm({ formError, isSubmitting, onSubmit, paymentMethod, setPay
       >
         {isSubmitting
         ? 'Processing your order…'
-        : `${paymentMethod === 'card' ? 'Simulate card payment' : 'Place COD order'} · ${formatCurrency(total)}`}
+        : `${paymentMethod === 'card'
+          ? hasPaymentGateway
+            ? 'Continue to secure payment'
+            : 'Simulate card payment'
+          : 'Place COD order'} · ${formatCurrency(total)}`}
       </button>
       <p className="payment-disclaimer">
-        Demo checkout only. No payment will be collected or processed.
+        {hasPaymentGateway
+          ? 'Card payments are handled by the configured payment provider.'
+          : 'Demo checkout only. No payment will be collected or processed.'}
       </p>
     </form>
   )

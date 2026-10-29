@@ -1,11 +1,17 @@
 import { Link } from 'react-router-dom'
+import ImageWithFallback from '../ImageWithFallback.jsx'
 import { formatCurrency } from '../../utils/formatCurrency.js'
 
 function ProductCard({ product }) {
   return (
     <article className="product-card">
       <Link className="product-image-link" to={`/products/${product.id}`}>
-        <img alt={product.name} className="product-image" loading="lazy" src={product.image} />
+        <ImageWithFallback
+          alt={product.name}
+          className="product-image"
+          loading="lazy"
+          src={product.image}
+        />
         {product.oldPrice && <span className="product-badge">Sale</span>}
       </Link>
       <div className="product-card-info">
