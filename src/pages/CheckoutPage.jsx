@@ -6,38 +6,26 @@ import { useCart } from '../hooks/useCart.js'
 import { createPaymentCheckoutSession } from '../services/paymentGateway.js'
 import { placeSimulatedOrder } from '../services/orderService.js'
 import { getInternationalPhoneNumber } from '../utils/phoneNumber.js'
-import { isCardExpiryInFuture, isValidCardNumber } from '../utils/payment.js'
+import { isCardExpiryInFuture, isValidDemoCardNumber } from '../utils/payment.js'
 
 function validateCheckoutForm(form, formData, paymentMethod, hasPaymentGateway) {
-  const requiredFields = ['email', 'fullName', 'address', 'city', 'country', 'phoneNational']
-  const hasMissingField = requiredFields.some(
-    (field) => !String(formData.get(field) ?? '').trim(),
-  )
-
-  if (hasMissingField) {
-    return {
-      isValid: false,
-      message: 'Please complete all required contact and shipping fields.',
-    }
-  }
-
-  if (paymentMethod !== 'card' || hasPaymentGateway) return { isValid: true }
+  if (paymentMethod !== 'card' || hasPaymentGateway) return true
 
   const cardNumberInput = form.elements.cardNumber
   const expiryInput = form.elements.cardExpiry
-  if (!isValidCardNumber(formData.get('cardNumber'))) {
+  if (!isValidDemoCardNumber(formData.get('cardNumber'))) {
     cardNumberInput.setCustomValidity('Enter a valid card number.')
     cardNumberInput.reportValidity()
-    return { isValid: false }
+    return false
   }
 
   if (!isCardExpiryInFuture(formData.get('cardExpiry'))) {
     expiryInput.setCustomValidity('Enter a valid future expiry date.')
     expiryInput.reportValidity()
-    return { isValid: false }
+    return false
   }
 
-  return { isValid: true }
+  return true
 }
 
 function createOrder(formData, cart, paymentMethod) {
@@ -92,11 +80,7 @@ function CheckoutPage() {
     if (!form.reportValidity()) return
 
     const formData = new FormData(form)
-    const validation = validateCheckoutForm(form, formData, paymentMethod, hasPaymentGateway)
-    if (!validation.isValid) {
-      if (validation.message) setFormError(validation.message)
-      return
-    }
+    if (!validateCheckoutForm(form, formData, paymentMethod, hasPaymentGateway)) return
 
     setFormError('')
     setIsSubmitting(true)

@@ -4,18 +4,21 @@ export function getProductStock(productId, stockByProduct = {}) {
   const product = getProductById(productId)
   if (!product) return 0
 
-  const stock = stockByProduct[productId]
-  return Number.isInteger(stock) && stock >= 0 && stock <= product.stock
-    ? stock
-    : product.stock
+  const savedStock = stockByProduct[productId]
+  if (Number.isInteger(savedStock) && savedStock >= 0 && savedStock <= product.stock) {
+    return savedStock
+  }
+  return product.stock
 }
 
-export function normalizeStock(stockByProduct) {
-  const normalizedStock = {}
+export function normalizeStock(savedStock = {}) {
+  const stock = {}
+
   products.forEach((product) => {
-    normalizedStock[product.id] = getProductStock(product.id, stockByProduct ?? {})
+    stock[product.id] = getProductStock(product.id, savedStock)
   })
-  return normalizedStock
+
+  return stock
 }
 
 function isValidCartItem(item, product, stock) {
@@ -24,91 +27,92 @@ function isValidCartItem(item, product, stock) {
     stock > 0 &&
     Number.isInteger(item.quantity) &&
     item.quantity > 0 &&
-    typeof item.size === 'string' &&
     product.sizes.includes(item.size) &&
-    typeof item.color === 'string' &&
     product.colors.includes(item.color)
   )
 }
 
-export function normalizeCartItems(items, stockByProduct = {}) {
-  if (!Array.isArray(items)) return []
+export function normalizeCartItems(savedItems, stockByProduct = {}) {
+  if (!Array.isArray(savedItems)) return []
 
-  const normalizedItems = new Map()
-  const productQuantities = new Map()
-  items.forEach((item) => {
+  const cartItems = []
+
+  savedItems.forEach((item) => {
     if (!item || typeof item !== 'object') return
 
     const product = getProductById(item.productId)
     const stock = getProductStock(item.productId, stockByProduct)
     if (!isValidCartItem(item, product, stock)) return
 
-    const alreadyInCart = productQuantities.get(item.productId) ?? 0
-    const acceptedQuantity = Math.min(item.quantity, stock - alreadyInCart)
-    if (acceptedQuantity < 1) return
+    let quantityAlreadyInCart = 0
+    cartItems.forEach((cartItem) => {
+      if (cartItem.productId === product.id) {
+        quantityAlreadyInCart += cartItem.quantity
+      }
+    })
 
-    const key = `${product.id}-${item.size}-${item.color}`
-    const existing = normalizedItems.get(key)
-    if (existing) {
-      existing.quantity += acceptedQuantity
+    const quantityToAdd = Math.min(item.quantity, stock - quantityAlreadyInCart)
+    if (quantityToAdd < 1) return
+
+    const matchingItem = cartItems.find(
+      (cartItem) =>
+        cartItem.productId === product.id &&
+        cartItem.size === item.size &&
+        cartItem.color === item.color,
+    )
+
+    if (matchingItem) {
+      matchingItem.quantity += quantityToAdd
     } else {
-      normalizedItems.set(key, {
+      cartItems.push({
         productId: product.id,
         size: item.size,
         color: item.color,
-        quantity: acceptedQuantity,
+        quantity: quantityToAdd,
       })
     }
-    productQuantities.set(item.productId, alreadyInCart + acceptedQuantity)
   })
 
-  return [...normalizedItems.values()]
+  return cartItems
 }
 
 export function addCartItem(items, productId, size, color, quantity, stockByProduct = {}) {
   const product = getProductById(productId)
   const stock = getProductStock(productId, stockByProduct)
+
   if (
     !product ||
-    stock < 1 ||
     !Number.isInteger(quantity) ||
     quantity < 1 ||
-    typeof size !== 'string' ||
     !product.sizes.includes(size) ||
-    typeof color !== 'string' ||
     !product.colors.includes(color)
   ) {
     return items
   }
 
-  const currentItems = normalizeCartItems(items, stockByProduct)
-  const currentProductQuantity = currentItems
-    .filter((item) => item.productId === product.id)
-    .reduce((total, item) => total + item.quantity, 0)
-  const acceptedQuantity = Math.min(quantity, stock - currentProductQuantity)
-  if (acceptedQuantity < 1) return currentItems
+  const cartItems = normalizeCartItems(items, stockByProduct)
+  let quantityAlreadyInCart = 0
+  cartItems.forEach((item) => {
+    if (item.productId === productId) quantityAlreadyInCart += item.quantity
+  })
 
-  const existing = currentItems.find(
-    (item) => item.productId === product.id && item.size === size && item.color === color,
+  const quantityToAdd = Math.min(quantity, stock - quantityAlreadyInCart)
+  if (quantityToAdd < 1) return cartItems
+
+  const matchingItem = cartItems.find(
+    (item) => item.productId === productId && item.size === size && item.color === color,
   )
 
-  if (!existing) {
-    return [
-      ...currentItems,
-      { productId: product.id, size, color, quantity: acceptedQuantity },
-    ]
+  if (matchingItem) {
+    matchingItem.quantity += quantityToAdd
+    return cartItems
   }
 
-  return currentItems.map((item) =>
-    item === existing
-      ? { ...item, quantity: item.quantity + acceptedQuantity }
-      : item,
-  )
+  return [...cartItems, { productId, size, color, quantity: quantityToAdd }]
 }
 
 export function setCartItemQuantity(items, productId, size, color, quantity, stockByProduct = {}) {
-  const product = getProductById(productId)
-  if (!product || !Number.isInteger(quantity)) return items
+  if (!Number.isInteger(quantity)) return items
 
   if (quantity <= 0) {
     return items.filter(
@@ -116,24 +120,42 @@ export function setCartItemQuantity(items, productId, size, color, quantity, sto
     )
   }
 
-  const normalizedItems = normalizeCartItems(items, stockByProduct)
-  const otherVariantQuantity = normalizedItems
-    .filter((item) => item.productId === productId && (item.size !== size || item.color !== color))
-    .reduce((total, item) => total + item.quantity, 0)
-  const maximumQuantity = Math.max(0, getProductStock(productId, stockByProduct) - otherVariantQuantity)
+  const cartItems = normalizeCartItems(items, stockByProduct)
+  const productStock = getProductStock(productId, stockByProduct)
+  let otherVariantQuantity = 0
 
-  const updatedItems = normalizedItems.map((item) =>
-    item.productId === productId && item.size === size && item.color === color
-      ? { ...item, quantity: Math.min(maximumQuantity, quantity) }
-      : item,
+  cartItems.forEach((item) => {
+    const isDifferentVariant =
+      item.productId === productId && (item.size !== size || item.color !== color)
+    if (isDifferentVariant) otherVariantQuantity += item.quantity
+  })
+
+  const maxQuantity = Math.max(0, productStock - otherVariantQuantity)
+  const itemExists = cartItems.some(
+    (item) => item.productId === productId && item.size === size && item.color === color,
   )
-  return updatedItems.filter((item) => item.quantity > 0)
+  if (!itemExists) return cartItems
+
+  return cartItems
+    .map((item) => {
+      if (item.productId === productId && item.size === size && item.color === color) {
+        return { ...item, quantity: Math.min(quantity, maxQuantity) }
+      }
+      return item
+    })
+    .filter((item) => item.quantity > 0)
 }
 
 export function calculateCartTotals(items) {
-  const itemCount = items.reduce((total, item) => total + item.quantity, 0)
-  const subtotal = items.reduce((total, item) => total + item.lineTotal, 0)
-  const shipping = subtotal === 0 || subtotal >= 100 ? 0 : 8
+  let itemCount = 0
+  let subtotal = 0
+
+  items.forEach((item) => {
+    itemCount += item.quantity
+    subtotal += item.lineTotal
+  })
+
+  const shipping = subtotal > 0 && subtotal < 100 ? 8 : 0
 
   return { itemCount, subtotal, shipping, total: subtotal + shipping }
 }

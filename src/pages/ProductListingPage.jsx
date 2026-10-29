@@ -1,4 +1,3 @@
-import { useMemo } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import FilterPanel from '../components/catalog/FilterPanel.jsx'
 import ProductList from '../components/catalog/ProductList.jsx'
@@ -26,17 +25,13 @@ function ProductListingPage() {
       ? [...new Set(Object.values(productCategories).flat())]
       : productCategories[currentCollection]
 
-  const visibleProducts = useMemo(
-    () =>
-      filterAndSortProducts(products, {
-        collection: currentCollection,
-        category,
-        search,
-        maxPrice,
-        sort,
-      }),
-    [category, currentCollection, maxPrice, search, sort],
-  )
+  const visibleProducts = filterAndSortProducts(products, {
+    collection: currentCollection,
+    category,
+    search,
+    maxPrice,
+    sort,
+  })
 
   if (collection && !['men', 'women'].includes(collection)) {
     return <NotFoundPage />

@@ -98,6 +98,20 @@ tests/          Automated catalog, cart, checkout-helper, and payment-session te
 
 SCSS is compiled by Vite with Sass. `index.scss` loads the storefront styles and the dark theme.
 
+### Beginner-friendly logic guide
+
+- `utils/cart.js` contains the cart rules. It checks product options, limits the quantity to stock,
+  combines matching cart items, and calculates totals using ordinary loops and arrays.
+- `CartContext.jsx` shares the cart with the whole app and saves it in the browser. The named
+  functions in the context (`addItem`, `updateQuantity`, `removeItem`, and `clearCart`) are the
+  actions used by the pages and components.
+- `filterProducts.js` first keeps products matching the selected collection, category, price, and
+  search text. It then sorts that smaller list.
+- Checkout uses the browser's built-in required-field checks. In demo mode, the card number check
+  only checks that the input contains 12-19 digits; it does not verify a bank card or take payment.
+- A configured hosted payment redirect is an optional integration boundary. The secure backend and
+  actual provider/payment verification are intentionally not part of this frontend demo.
+
 ## Routes and data flow
 
 - `/` and `/collections/:collection` render the product listing; supported collections are `men` and `women`.
