@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000">
+  <rect width="800" height="1000" fill="#171516"/>
+  <path d="M400 310c-52 0-94-42-94-94s42-94 94-94 94 42 94 94" fill="none" stroke="#c4b5fd" stroke-linecap="round" stroke-width="18"/>
+  <path d="m242 360 158 76 158-76 147 130-91 102-63-51v330H249V541l-63 51-91-102z" fill="#25232a" stroke="#c4b5fd" stroke-linejoin="round" stroke-width="16"/>
+  <path d="M400 438v433" stroke="#45404d" stroke-width="12"/>
+  <text x="400" y="940" fill="#d0cdd5" font-family="Arial, sans-serif" font-size="26" text-anchor="middle">STYLEHUB</text>
+</svg>

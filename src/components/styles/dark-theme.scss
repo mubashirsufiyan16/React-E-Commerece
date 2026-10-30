@@ -1,0 +1,291 @@
+$background: #090a0d;
+$surface: #111216;
+$surface-raised: #17181d;
+$border: #2a2b32;
+$text: #f2f1f5;
+$muted: #aaa7b2;
+$accent: #c4b5fd;
+$accent-strong: #a78bfa;
+
+:root {
+  color-scheme: dark;
+  color: $text;
+  background: $background;
+  --ink: #{$text};
+  --muted: #{$muted};
+  --line: #{$border};
+  --paper: #{$surface};
+  --canvas: #{$background};
+  --plum: #{$accent};
+  --plum-dark: #f4edff;
+  --serif: 'Playfair Display', Georgia, serif;
+}
+
+body {
+  color: $text;
+  background: $background;
+}
+
+.site-header {
+  background: rgb(12 13 16 / 96%);
+  border-color: $border;
+
+  .brand {
+    color: $text;
+  }
+}
+
+.brand-mark,
+.cart-count {
+  color: #111016;
+  background: $accent;
+}
+
+.primary-nav a,
+.sidebar-links a,
+.collection-hero-copy > p:last-child,
+.detail-description,
+.detail-promise p,
+.summary-row,
+.confirmation-item {
+  color: #d0cdd5;
+}
+
+.primary-nav a::after {
+  background: $accent;
+}
+
+.search-form {
+  border-color: #55535d;
+
+  input,
+  input::placeholder {
+    color: $text;
+  }
+}
+
+.sidebar {
+  background: #0e0f13;
+  border-color: $border;
+}
+
+.sidebar-links a:hover,
+.sidebar-links a[aria-current='page'],
+.sidebar-collection:hover {
+  color: $accent;
+}
+
+.eyebrow {
+  color: #c8b7ef;
+}
+
+.collection-hero,
+.collection-hero-men {
+  background: #17191e;
+}
+
+.collection-hero-women {
+  background: #1b171e;
+}
+
+.hero-decoration {
+  color: rgb(196 181 253 / 8%);
+}
+
+.sort-control select,
+.filter-field select,
+.form-field input,
+.form-field select {
+  color: $text;
+  background: #191a20;
+  border-color: #373840;
+}
+
+.sort-control select option,
+.filter-field select option,
+.form-field select option {
+  color: $text;
+  background: #191a20;
+}
+
+.filter-controls {
+  border-color: $border;
+}
+
+.filter-field input[type='range'] {
+  accent-color: $accent-strong;
+}
+
+.product-image-link,
+.detail-image-wrap,
+.cart-item-image {
+  background: #1a1b20;
+}
+
+.product-badge {
+  color: #eee8ff;
+  background: #27232f;
+}
+
+.product-meta,
+.old-price,
+.breadcrumbs,
+.detail-price-row del {
+  color: $muted;
+}
+
+.quick-add {
+  color: $accent;
+  border-color: #6f5da0;
+}
+
+.button-primary {
+  color: #15111e;
+  background: $accent;
+
+  &:hover:not(:disabled) {
+    background: #d5c9ff;
+  }
+}
+
+.button-secondary {
+  color: #e5dcff;
+  background: transparent;
+  border-color: #65558a;
+
+  &:hover {
+    background: #211d2b;
+  }
+}
+
+.detail-rating {
+  color: #e8c98f;
+}
+
+.color-swatch,
+.swatch-1,
+.swatch-2 {
+  color: $text;
+  background: #25262c;
+  border-color: #414149;
+}
+
+.color-swatch.selected {
+  color: #f5efff;
+  background: #322a43;
+  border-color: $accent;
+}
+
+.size-list button {
+  color: $text;
+  background: #191a20;
+  border-color: #373840;
+
+  &.selected {
+    color: #15111e;
+    background: $accent;
+    border-color: $accent;
+  }
+}
+
+.stock-note {
+  color: #a8c9a9;
+}
+
+.drawer-backdrop {
+  background: rgb(0 0 0 / 76%);
+}
+
+.cart-drawer,
+.form-section,
+.checkout-summary,
+.confirmation-card {
+  color: $text;
+  background: $surface;
+  border-color: $border;
+}
+
+.payment-option {
+  background: $surface-raised;
+  border-color: $border;
+}
+
+.payment-option.selected {
+  border-color: $accent;
+  box-shadow: inset 0 0 0 1px $accent;
+}
+
+.payment-option input {
+  accent-color: $accent;
+}
+
+.payment-option-copy small,
+.demo-card-notice {
+  color: $muted;
+}
+
+.cart-drawer {
+  box-shadow: -10px 0 40px rgb(0 0 0 / 42%);
+}
+
+.cart-item,
+.confirmation-item {
+  border-color: #303137;
+}
+
+.empty-cart-icon {
+  color: #c4b5fd;
+}
+
+.checkout-progress {
+  color: #8f8c97;
+
+  a,
+  strong {
+    color: $accent;
+  }
+}
+
+.form-section-heading,
+.form-field {
+  color: #e3e1e8;
+}
+
+.form-field input::placeholder {
+  color: #918e99;
+}
+
+.form-error {
+  color: #ffc4ca;
+  background: #3a2025;
+}
+
+.confirmation-icon {
+  color: #101611;
+  background: #a5c9a8;
+}
+
+.confirmation-message strong,
+.confirmation-item strong {
+  color: $text;
+}
+
+.confirmation-item small {
+  color: #b4b0ba;
+}
+
+.remove-item,
+.close-drawer {
+  color: #c1bdc8;
+
+  &:hover {
+    color: $accent;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --muted: #d0cdd5;
+    --line: #4a4b54;
+  }
+}
