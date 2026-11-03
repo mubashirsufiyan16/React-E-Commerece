@@ -1,9 +1,11 @@
+import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 function SearchBar() {
   const [searchParams, setSearchParams] = useSearchParams()
+  const currentSearch = searchParams.get('search') ?? ''
 
-  function updateSearch(search) {
+  function handleSearch(search) {
     const nextParams = new URLSearchParams(searchParams)
     if (search) {
       nextParams.set('search', search)
@@ -14,13 +16,23 @@ function SearchBar() {
     setSearchParams(nextParams, { replace: true })
   }
 
+  return (
+    <SearchForm
+      key={currentSearch}
+      currentSearch={currentSearch}
+      onSearch={handleSearch}
+    />
+  )
+}
+
+function SearchForm({ currentSearch, onSearch }) {
+  const [inputValue, setInputValue] = useState(currentSearch)
+
   function handleSubmit(event) {
     event.preventDefault()
-    updateSearch((searchParams.get('search') ?? '').trim())
-  }
-
-  function handleChange(event) {
-    updateSearch(event.target.value)
+    const search = inputValue.trim()
+    setInputValue(search)
+    onSearch(search)
   }
 
   return (
@@ -30,10 +42,10 @@ function SearchBar() {
       </label>
       <input
         id="site-search"
-        onChange={handleChange}
+        onChange={(event) => setInputValue(event.target.value)}
         placeholder="Search styles..."
         type="search"
-        value={searchParams.get('search') ?? ''}
+        value={inputValue}
       />
       <button aria-label="Submit search" type="submit">
         <svg aria-hidden="true" viewBox="0 0 24 24">

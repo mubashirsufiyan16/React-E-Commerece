@@ -14,6 +14,7 @@ function Header() {
       <nav aria-label="Main navigation" className="primary-nav">
         <NavLink to="/collections/men">Men</NavLink>
         <NavLink to="/collections/women">Women</NavLink>
+        <NavLink to="/collections/kids">Kids</NavLink>
       </nav>
       <div className="header-actions">
         <SearchBar />

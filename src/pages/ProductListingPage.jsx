@@ -11,7 +11,7 @@ const defaultFilters = { category: 'all', maxPrice: 200, sort: 'featured' }
 function ProductListingPage() {
   const { collection } = useParams()
   const [searchParams, setSearchParams] = useSearchParams()
-  const currentCollection = ['men', 'women'].includes(collection) ? collection : 'all'
+  const currentCollection = ['men', 'women','kids'].includes(collection) ? collection : 'all'
   const category = searchParams.get('category') ?? defaultFilters.category
   const search = (searchParams.get('search') ?? '').trim()
   const requestedMaxPrice = Number(searchParams.get('maxPrice'))
@@ -33,7 +33,7 @@ function ProductListingPage() {
     sort,
   })
 
-  if (collection && !['men', 'women'].includes(collection)) {
+  if (collection && !['men', 'women','kids'].includes(collection)) {
     return <NotFoundPage />
   }
 
@@ -46,13 +46,13 @@ function ProductListingPage() {
     }
     setSearchParams(nextParams)
   }
-
+  const collectionName = currentCollection === 'all' ? '' : `${currentCollection} `
   const title =
     search.length > 0
       ? `Search results for “${search}”`
       : currentCollection === 'all'
         ? 'Find your everyday favorites'
-        : `${currentCollection === 'men' ? 'Men’s' : 'Women’s'} collection`
+        : `${collectionName}collection`
   const subtitle =
     currentCollection === 'all'
       ? 'Thoughtful pieces, easy to wear and made to be lived in.'

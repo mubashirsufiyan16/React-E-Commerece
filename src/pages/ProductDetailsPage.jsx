@@ -47,7 +47,7 @@ function ProductDetailsContent({ productId }) {
         <Link to="/">Home</Link>
         <span aria-hidden="true">/</span>
         <Link to={`/collections/${product.collection}`}>
-          {product.collection === 'men' ? 'Men' : 'Women'}
+       {({ men: 'Men', women: 'Women', kids: 'Kids' })[product.collection]} 
         </Link>
         <span aria-hidden="true">/</span>
         <span>{product.name}</span>
