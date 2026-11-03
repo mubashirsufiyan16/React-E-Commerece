@@ -1,29 +1,72 @@
-import { useState } from 'react'
-import { formatCurrency } from '../../utils/formatCurrency.js'
-import { getPhoneRule } from '../../utils/phoneNumber.js'
+import { useState } from "react";
+import { formatCurrency } from "../../utils/formatCurrency.js";
+import { getPhoneRule } from "../../utils/phoneNumber.js";
 
 const citiesByCountry = {
-  Australia: ['Adelaide', 'Brisbane', 'Canberra', 'Melbourne', 'Perth', 'Sydney'],
-  Bangladesh: ['Barishal', 'Chattogram', 'Dhaka', 'Khulna', 'Rajshahi', 'Sylhet'],
-  Canada: ['Calgary', 'Montreal', 'Ottawa', 'Toronto', 'Vancouver', 'Winnipeg'],
-  India: ['Ahmedabad', 'Bengaluru', 'Chennai', 'Delhi', 'Hyderabad', 'Kolkata', 'Mumbai'],
-  Pakistan: [
-    'Faisalabad',
-    'Gujranwala',
-    'Hyderabad',
-    'Islamabad',
-    'Karachi',
-    'Lahore',
-    'Multan',
-    'Peshawar',
-    'Quetta',
-    'Rawalpindi',
+  Australia: [
+    "Adelaide",
+    "Brisbane",
+    "Canberra",
+    "Melbourne",
+    "Perth",
+    "Sydney",
   ],
-  'Saudi Arabia': ['Abha', 'Dammam', 'Jeddah', 'Mecca', 'Medina', 'Riyadh'],
-  'United Arab Emirates': ['Abu Dhabi', 'Ajman', 'Dubai', 'Fujairah', 'Sharjah', 'Umm Al Quwain'],
-  'United Kingdom': ['Birmingham', 'Bristol', 'Edinburgh', 'Glasgow', 'London', 'Manchester'],
-  'United States': ['Austin', 'Chicago', 'Los Angeles', 'New York', 'Seattle', 'Washington, D.C.'],
-}
+  Bangladesh: [
+    "Barishal",
+    "Chattogram",
+    "Dhaka",
+    "Khulna",
+    "Rajshahi",
+    "Sylhet",
+  ],
+  Canada: ["Calgary", "Montreal", "Ottawa", "Toronto", "Vancouver", "Winnipeg"],
+  India: [
+    "Ahmedabad",
+    "Bengaluru",
+    "Chennai",
+    "Delhi",
+    "Hyderabad",
+    "Kolkata",
+    "Mumbai",
+  ],
+  Pakistan: [
+    "Faisalabad",
+    "Gujranwala",
+    "Hyderabad",
+    "Islamabad",
+    "Karachi",
+    "Lahore",
+    "Multan",
+    "Peshawar",
+    "Quetta",
+    "Rawalpindi",
+  ],
+  "Saudi Arabia": ["Abha", "Dammam", "Jeddah", "Mecca", "Medina", "Riyadh"],
+  "United Arab Emirates": [
+    "Abu Dhabi",
+    "Ajman",
+    "Dubai",
+    "Fujairah",
+    "Sharjah",
+    "Umm Al Quwain",
+  ],
+  "United Kingdom": [
+    "Birmingham",
+    "Bristol",
+    "Edinburgh",
+    "Glasgow",
+    "London",
+    "Manchester",
+  ],
+  "United States": [
+    "Austin",
+    "Chicago",
+    "Los Angeles",
+    "New York",
+    "Seattle",
+    "Washington, D.C.",
+  ],
+};
 
 function CheckoutForm({
   formError,
@@ -34,11 +77,11 @@ function CheckoutForm({
   setPaymentMethod,
   total,
 }) {
-  const [country, setCountry] = useState('')
-  const [city, setCity] = useState('')
-  const [phone, setPhone] = useState('')
-  const availableCities = citiesByCountry[country] ?? []
-  const phoneRule = getPhoneRule(country)
+  const [country, setCountry] = useState("");
+  const [city, setCity] = useState("");
+  const [phone, setPhone] = useState("");
+  const availableCities = citiesByCountry[country] ?? [];
+  const phoneRule = getPhoneRule(country);
 
   return (
     <form className="checkout-form" onSubmit={onSubmit}>
@@ -72,7 +115,12 @@ function CheckoutForm({
         <div className="form-fields-grid">
           <label className="form-field field-span">
             <span>Full name</span>
-            <input autoComplete="name" name="fullName" placeholder="Your full name" required />
+            <input
+              autoComplete="name"
+              name="fullName"
+              placeholder="Your full name"
+              required
+            />
           </label>
           <label className="form-field field-span">
             <span>Street address</span>
@@ -94,7 +142,7 @@ function CheckoutForm({
               value={city}
             >
               <option disabled value="">
-                {country ? 'Choose a city' : 'Select a country first'}
+                {country ? "Choose a city" : "Select a country first"}
               </option>
               {availableCities.map((availableCity) => (
                 <option key={availableCity} value={availableCity}>
@@ -104,25 +152,35 @@ function CheckoutForm({
             </select>
           </label>
           <label className="form-field">
-            <span>Postal code <small>(optional)</small></span>
-            <input autoComplete="postal-code" name="postalCode" placeholder="Postal code" />
+            <span>
+              Postal code <small>(optional)</small>
+            </span>
+            <input
+              autoComplete="postal-code"
+              name="postalCode"
+              placeholder="Postal code"
+            />
           </label>
           <label className="form-field field-span">
             <span>Country / region</span>
             <select
               autoComplete="country-name"
               onChange={(event) => {
-                const nextCountry = event.target.value
-                setCountry(nextCountry)
-                setCity('')
-                setPhone('')
-                event.currentTarget.form.elements.phoneNational.setCustomValidity('')
+                const nextCountry = event.target.value;
+                setCountry(nextCountry);
+                setCity("");
+                setPhone("");
+                event.currentTarget.form.elements.phoneNational.setCustomValidity(
+                  "",
+                );
               }}
               value={country}
               name="country"
               required
             >
-              <option disabled value="">Choose a country</option>
+              <option disabled value="">
+                Choose a country
+              </option>
               <option>Bangladesh</option>
               <option>India</option>
               <option>Saudi Arabia</option>
@@ -142,7 +200,7 @@ function CheckoutForm({
                 className="phone-country-code"
                 readOnly
                 tabIndex="-1"
-                value={phoneRule?.dialCode ?? ''}
+                value={phoneRule?.dialCode ?? ""}
               />
               <input
                 autoComplete="tel-national"
@@ -150,26 +208,28 @@ function CheckoutForm({
                 inputMode="numeric"
                 name="phoneNational"
                 onChange={(event) => {
-                  setPhone(event.target.value)
-                  event.target.setCustomValidity('')
+                  setPhone(event.target.value);
+                  event.target.setCustomValidity("");
                 }}
                 onInvalid={(event) => {
                   event.target.setCustomValidity(
-                    `Please enter the correct phone number: use ${phoneRule?.dialCode ?? 'the selected country code'} and ${phoneRule?.nationalDigits ?? ''} digits.`,
-                  )
+                    `Please enter the correct phone number: use ${phoneRule?.dialCode ?? "the selected country code"} and ${phoneRule?.nationalDigits ?? ""} digits.`,
+                  );
                 }}
-                pattern={phoneRule ? `[0-9]{${phoneRule.nationalDigits}}` : undefined}
+                pattern={
+                  phoneRule ? `[0-9]{${phoneRule.nationalDigits}}` : undefined
+                }
                 maxLength={phoneRule?.nationalDigits}
                 placeholder={
                   phoneRule
                     ? `${phoneRule.nationalDigits} digit phone number`
-                    : 'Select a country first'
+                    : "Select a country first"
                 }
                 required
                 title={
                   phoneRule
                     ? `Enter ${phoneRule.nationalDigits} digits. The ${phoneRule.dialCode} country code is fixed.`
-                    : 'Select a country before entering your phone number.'
+                    : "Select a country before entering your phone number."
                 }
                 type="tel"
                 value={phone}
@@ -187,11 +247,13 @@ function CheckoutForm({
           </div>
         </div>
         <div className="payment-options">
-          <label className={`payment-option${paymentMethod === 'cod' ? ' selected' : ''}`}>
+          <label
+            className={`payment-option${paymentMethod === "cod" ? " selected" : ""}`}
+          >
             <input
-              checked={paymentMethod === 'cod'}
+              checked={paymentMethod === "cod"}
               name="paymentMethod"
-              onChange={() => setPaymentMethod('cod')}
+              onChange={() => setPaymentMethod("cod")}
               type="radio"
               value="cod"
             />
@@ -200,11 +262,13 @@ function CheckoutForm({
               <small>Pay when your order arrives.</small>
             </span>
           </label>
-          <label className={`payment-option${paymentMethod === 'card' ? ' selected' : ''}`}>
+          <label
+            className={`payment-option${paymentMethod === "card" ? " selected" : ""}`}
+          >
             <input
-              checked={paymentMethod === 'card'}
+              checked={paymentMethod === "card"}
               name="paymentMethod"
-              onChange={() => setPaymentMethod('card')}
+              onChange={() => setPaymentMethod("card")}
               type="radio"
               value="card"
             />
@@ -212,17 +276,17 @@ function CheckoutForm({
               <strong>Debit or credit card</strong>
               <small>
                 {hasPaymentGateway
-                  ? 'Continue to the configured secure payment provider.'
-                  : 'Simulated card payment; no charge will be made.'}
+                  ? "Continue to the configured secure payment provider."
+                  : "Simulated card payment; no charge will be made."}
               </small>
             </span>
           </label>
         </div>
-        {paymentMethod === 'card' && !hasPaymentGateway && (
+        {paymentMethod === "card" && !hasPaymentGateway && (
           <div className="card-payment-fields">
             <p className="demo-card-notice">
-              Demo only: use test card details, not a real card. Card details are not saved.
-              Example: 4242 4242 4242 4242 · 12/30 · 123
+              Demo only: use test card details, not a real card. Card details
+              are not saved. Example: 4242 4242 4242 4242 · 12/30 · 123
             </p>
             <label className="form-field">
               <span>Name on card</span>
@@ -240,7 +304,7 @@ function CheckoutForm({
                 inputMode="numeric"
                 maxLength={23}
                 name="cardNumber"
-                onChange={(event) => event.target.setCustomValidity('')}
+                onChange={(event) => event.target.setCustomValidity("")}
                 placeholder="1234 5678 9012 3456"
                 required
                 type="text"
@@ -253,7 +317,7 @@ function CheckoutForm({
                   autoComplete="off"
                   maxLength={5}
                   name="cardExpiry"
-                  onChange={(event) => event.target.setCustomValidity('')}
+                  onChange={(event) => event.target.setCustomValidity("")}
                   pattern="(0[1-9]|1[0-2])\/[0-9]{2}"
                   placeholder="MM/YY"
                   required
@@ -277,27 +341,33 @@ function CheckoutForm({
           </div>
         )}
       </section>
-      {formError && <p className="form-error" role="alert">{formError}</p>}
+      {formError && (
+        <p className="form-error" role="alert">
+          {formError}
+        </p>
+      )}
       <button
         className="button button-primary checkout-submit"
         disabled={isSubmitting}
         type="submit"
       >
         {isSubmitting
-        ? 'Processing your order…'
-        : `${paymentMethod === 'card'
-          ? hasPaymentGateway
-            ? 'Continue to secure payment'
-            : 'Simulate card payment'
-          : 'Place COD order'} · ${formatCurrency(total)}`}
+          ? "Processing your order…"
+          : `${
+              paymentMethod === "card"
+                ? hasPaymentGateway
+                  ? "Continue to secure payment"
+                  : "Simulate card payment"
+                : "Place COD order"
+            } · ${formatCurrency(total)}`}
       </button>
       <p className="payment-disclaimer">
         {hasPaymentGateway
-          ? 'Card payments are handled by the configured payment provider.'
-          : 'Demo checkout only. No payment will be collected or processed.'}
+          ? "Card payments are handled by the configured payment provider."
+          : "Demo checkout only. No payment will be collected or processed."}
       </p>
     </form>
-  )
+  );
 }
 
-export default CheckoutForm
+export default CheckoutForm;
