@@ -5,6 +5,7 @@ import CheckoutPage from './pages/CheckoutPage.jsx'
 import OrderConfirmationPage from './pages/OrderConfirmationPage.jsx'
 import ProductDetailsPage from './pages/ProductDetailsPage.jsx'
 import ProductListingPage from './pages/ProductListingPage.jsx'
+import OrderHistoryPage from './pages/OrderHistoryPage.jsx'
 import NotFoundPage from './pages/NotFoundPage.jsx'
 import './components/styles/index.scss'
 
@@ -19,6 +20,7 @@ function App() {
             <Route path="products/:productId" element={<ProductDetailsPage />} />
             <Route path="checkout" element={<CheckoutPage />} />
             <Route path="order-confirmation" element={<OrderConfirmationPage />} />
+            <Route path="orders" element={<OrderHistoryPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>

@@ -73,6 +73,7 @@ function OrderConfirmationPage() {
         <div className="confirmation-item confirmation-total"><strong>Total</strong><strong>{formatCurrency(order.total)}</strong></div>
       </div>
       <Link className="button button-primary" to="/">Continue exploring</Link>
+      <Link className="button button-secondary" to="/orders">View order history</Link>
     </section>
   )
 }

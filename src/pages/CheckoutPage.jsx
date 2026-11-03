@@ -4,7 +4,11 @@ import CheckoutForm from '../components/checkout/CheckoutForm.jsx'
 import OrderSummary from '../components/checkout/OrderSummary.jsx'
 import { useCart } from '../hooks/useCart.js'
 import { createPaymentCheckoutSession } from '../services/paymentGateway.js'
-import { placeSimulatedOrder } from '../services/orderService.js'
+import {
+  ORDER_HISTORY_STORAGE_KEY,
+  placeSimulatedOrder,
+  saveOrderToHistory,
+} from '../services/orderService.js'
 import { getInternationalPhoneNumber } from '../utils/phoneNumber.js'
 import { isCardExpiryInFuture, isValidDemoCardNumber } from '../utils/payment.js'
 
@@ -90,7 +94,9 @@ function CheckoutPage() {
       paymentMethod,
     )
     let previousOrder
+    let previousOrderHistory
     let savedOrder = false
+    let savedOrderHistory = false
 
     try {
       if (paymentMethod === 'card' && hasPaymentGateway) {
@@ -105,6 +111,9 @@ function CheckoutPage() {
       }
 
       const confirmedOrder = { ...result.order, status: result.status }
+      previousOrderHistory = window.localStorage.getItem(ORDER_HISTORY_STORAGE_KEY)
+      saveOrderToHistory(confirmedOrder)
+      savedOrderHistory = true
       previousOrder = window.sessionStorage.getItem('stylehub-last-order')
       window.sessionStorage.setItem('stylehub-last-order', JSON.stringify(confirmedOrder))
       savedOrder = true
@@ -122,6 +131,17 @@ function CheckoutPage() {
           }
         } catch (storageError) {
           console.error('Unable to restore the previous StyleHub order.', storageError)
+        }
+      }
+      if (savedOrderHistory) {
+        try {
+          if (previousOrderHistory) {
+            window.localStorage.setItem(ORDER_HISTORY_STORAGE_KEY, previousOrderHistory)
+          } else {
+            window.localStorage.removeItem(ORDER_HISTORY_STORAGE_KEY)
+          }
+        } catch (storageError) {
+          console.error('Unable to restore StyleHub order history.', storageError)
         }
       }
       setFormError('Checkout could not be completed. Please try again.')

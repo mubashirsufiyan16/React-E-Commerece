@@ -21,6 +21,9 @@ function Header() {
       </nav>
       <div className="header-actions">
         {showSearchBar && <SearchBar />}
+        <NavLink className="cart-button orders-button" to="/orders">
+          Orders
+        </NavLink>
         <button aria-label={`Open cart, ${itemCount} items`} className="cart-button" onClick={openDrawer} type="button">
           <svg aria-hidden="true" viewBox="0 0 24 24">
             <path d="M4 5h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 9H7" />
