@@ -1,9 +1,12 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import { useCart } from '../../hooks/useCart.js'
 import SearchBar from './SearchBar.jsx'
 
 function Header() {
   const { itemCount, openDrawer } = useCart()
+  const { pathname } = useLocation()
+  const showSearchBar =
+    pathname === '/' || /^\/collections\/(men|women|kids)$/.test(pathname)
 
   return (
     <header className="site-header">
@@ -17,7 +20,7 @@ function Header() {
         <NavLink to="/collections/kids">Kids</NavLink>
       </nav>
       <div className="header-actions">
-        <SearchBar />
+        {showSearchBar && <SearchBar />}
         <button aria-label={`Open cart, ${itemCount} items`} className="cart-button" onClick={openDrawer} type="button">
           <svg aria-hidden="true" viewBox="0 0 24 24">
             <path d="M4 5h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 9H7" />
