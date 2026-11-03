@@ -2,16 +2,34 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import ImageWithFallback from '../components/ImageWithFallback.jsx'
 import { getProductById } from '../data/products.js'
-import { getOrderHistory } from '../services/orderService.js'
+import {
+  deleteOrderFromHistory,
+  getOrderHistory,
+} from '../services/orderService.js'
 import { formatCurrency } from '../utils/formatCurrency.js'
 
 function OrderHistoryPage() {
-  const [orders] = useState(getOrderHistory)
+  const [orders, setOrders] = useState(getOrderHistory)
+  const [deleteError, setDeleteError] = useState('')
+
+  function handleDeleteOrder(orderNumber) {
+    setDeleteError('')
+    try {
+      deleteOrderFromHistory(orderNumber)
+      setOrders((currentOrders) =>
+        currentOrders.filter((order) => order.number !== orderNumber),
+      )
+    } catch (error) {
+      console.error('Unable to delete the StyleHub order.', error)
+      setDeleteError('This order could not be deleted. Please try again.')
+    }
+  }
 
   return (
     <div className="order-history-page">
       <p className="eyebrow">YOUR PURCHASES</p>
       <h1>Order history</h1>
+      {deleteError && <p className="form-error" role="alert">{deleteError}</p>}
       {orders.length > 0 ? (
         <div className="order-history-list">
           {orders.map((order) => (
@@ -19,6 +37,15 @@ function OrderHistoryPage() {
               <div className="order-reference">
                 <span>ORDER REFERENCE</span>
                 <strong>{order.number}</strong>
+                <button
+                  aria-label={`Delete order ${order.number}`}
+                  className="icon-button remove-item order-history-delete"
+                  onClick={() => handleDeleteOrder(order.number)}
+                  title="Delete order"
+                  type="button"
+                >
+                  ×
+                </button>
               </div>
               <p className="order-history-date">
                 Placed {new Date(order.placedAt).toLocaleDateString()}

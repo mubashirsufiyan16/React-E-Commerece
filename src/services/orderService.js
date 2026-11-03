@@ -67,6 +67,22 @@ export function saveOrderToHistory(order) {
   window.localStorage.setItem(ORDER_HISTORY_STORAGE_KEY, JSON.stringify(nextOrders))
 }
 
+export function deleteOrderFromHistory(orderNumber) {
+  const savedOrders = window.localStorage.getItem(ORDER_HISTORY_STORAGE_KEY)
+  const orders = savedOrders ? JSON.parse(savedOrders) : []
+  if (!Array.isArray(orders)) {
+    throw new Error('Saved order history must be a list.')
+  }
+
+  const nextOrders = orders.filter((order) => order?.number !== orderNumber)
+  window.localStorage.setItem(ORDER_HISTORY_STORAGE_KEY, JSON.stringify(nextOrders))
+
+  const lastOrder = window.sessionStorage.getItem('stylehub-last-order')
+  if (lastOrder && JSON.parse(lastOrder)?.number === orderNumber) {
+    window.sessionStorage.removeItem('stylehub-last-order')
+  }
+}
+
 export async function placeSimulatedOrder(order) {
   if (!order || !Array.isArray(order.items) || order.items.length === 0) {
     throw new Error('A simulated order requires at least one cart item.')
